@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'タイマー'),
     );
   }
 }
@@ -29,10 +31,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int lastSecond = 0;
+  String strElapsedTime = "00:00:00";
+  bool isStarted = false;
 
-  void _incrementCounter() {
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        int hour = 23;
+        int minute = 59;
+        int second = 59;
+        print("Here");
+        strElapsedTime =
+            '${hour.toString().padLeft(2)}:${minute.toString().padLeft(2)}:${second.toString().padLeft(2)}';
+      });
+    });
   }
 
   @override
@@ -42,24 +58,52 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  strElapsedTime,
+                  style: TextStyle(
+                    fontSize: 30,
+                    letterSpacing: 10,
+                    color: Colors.deepPurple,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+//                      style: ElevatedButton.styleFrom(fixedSize: Size(100, 50)),
+                      child: Text(
+                        'キャンセル',
+                      ),
+                      onPressed: () {},
+                    ),
+                    SizedBox(width: 30),
+                    ElevatedButton(
+                      child: Text(isStarted
+                          ? (lastSecond > 0)
+                              ? '再開'
+                              : '一時停止'
+                          : '開始'),
+                      onPressed: () {
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: isStarted ? Colors.red : Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
